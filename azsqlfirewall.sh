@@ -18,7 +18,7 @@ echo getting external IP...
 externalip=$(curl -s http://whatismyip.akamai.com/)
 echo external IP is $externalip
 
-echo logging on to Azure...
+echo logging on to Azure as $username...
 az login -u $username -p $password &> /dev/null
 retVal=$?
 if [ $retVal -ne 0 ]; then
@@ -34,11 +34,17 @@ if [ $retVal -ne 0 ]; then
 	exit 1
 fi
 
+echo looking up $fqdn...
 id=$(echo "$servers" | jq -r --arg fqdn $fqdn '.[] | select(.fullyQualifiedDomainName | contains($fqdn)) | .id')
 resgrp=$(echo "$servers" | jq -r --arg fqdn $fqdn '.[] | select(.fullyQualifiedDomainName | contains($fqdn)) | .resourceGroup')
 srvname=$(echo "$servers" | jq -r --arg fqdn $fqdn '.[] | select(.fullyQualifiedDomainName | contains($fqdn)) | .name')
 
-if [ -z "$id" ]; then echo "server not found in list"; exit 1; fi
+if [ -z "$id" ]; then
+	echo "server not found in list"
+	echo "servers:"
+	echo $servers
+	exit 1
+fi
 
 echo "server found, getting existing rules..."
 rules=$(az sql server firewall-rule list --id=$id)
