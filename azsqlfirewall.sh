@@ -18,15 +18,34 @@ echo getting external IP...
 externalip=$(curl -s http://whatismyip.akamai.com/)
 echo external IP is $externalip
 
-echo logging on to Azure as $username...
-az login -u $username -p $password &> /dev/null
+if [ -z "$tenant" ]; then
+	echo logging on to Azure as $username...
+	az login -u $username -p $password &> /dev/null
+else
+	echo logging on to Azure as $username for $tenant...
+	az login -u $username -p $password -t $tenant &> /dev/null
+fi
 retVal=$?
 if [ $retVal -ne 0 ]; then
 	echo login failed
 	exit 1
+else
+	echo logged on
 fi
 
-echo logged on. getting server list...
+if [ -z "$subscription" ]; then
+	echo setting subscription $subscription...
+	az account set --subscription "$subscription"
+	retVal=$?
+	if [ $retVal -ne 0 ]; then
+		echo set subscription failed
+		exit 1
+	else
+		echo subscription set
+	fi
+fi
+
+echo getting server list...
 servers=$(az sql server list)
 retVal=$?
 if [ $retVal -ne 0 ]; then
