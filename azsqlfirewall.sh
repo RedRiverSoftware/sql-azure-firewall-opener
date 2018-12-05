@@ -33,7 +33,7 @@ else
 	echo logged on
 fi
 
-if [ -z "$subscription" ]; then
+if [ -n "$subscription" ]; then
 	echo setting subscription $subscription...
 	az account set --subscription "$subscription"
 	retVal=$?
