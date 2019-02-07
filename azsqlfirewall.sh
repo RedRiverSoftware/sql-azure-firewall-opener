@@ -20,10 +20,10 @@ echo external IP is $externalip
 
 if [ -z "$tenant" ]; then
 	echo logging on to Azure as $username...
-	az login -u $username -p $password &> /dev/null
+	az login -u $username -p $password $extraLoginParams &> /dev/null
 else
 	echo logging on to Azure as $username for $tenant...
-	az login -u $username -p $password -t $tenant &> /dev/null
+	az login $extra -u $username -p $password -t $tenant $extraLoginParams &> /dev/null
 fi
 retVal=$?
 if [ $retVal -ne 0 ]; then
