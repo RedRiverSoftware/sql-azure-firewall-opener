@@ -1,4 +1,4 @@
-FROM microsoft/azure-cli:2.0.57
+FROM mcr.microsoft.com/azure-cli
 
 ADD azsqlfirewall.sh /azsqlfirewall.sh
 RUN chmod +x /azsqlfirewall.sh
